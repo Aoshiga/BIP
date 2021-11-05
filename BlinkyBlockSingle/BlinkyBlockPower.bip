@@ -1,0 +1,396 @@
+@cpp(include="stdio.h,ext_code/ext.hpp", src="ext_code/ext.cpp")
+package BlinkyBlockPower
+  use ports
+
+  extern data type void
+
+  extern function printf(string)
+  extern function printf(string, bool)
+  extern function printf(string, int)
+  extern function printf(string, int, int, int, int)
+  extern function void printf (string, const string)
+  
+  extern function const string connection (int)
+  extern function int checker (const int,const int)
+  extern function int what_connected (const int,const int)
+  extern function int measure ()
+  extern function int play_sound ()
+
+  const data int no_connection = 0
+  const data int top = 1 
+  const data int front = 2
+  const data int left = 4
+  const data int right = 8  
+  const data int back = 16
+  const data int bottom = 32
+  
+  //Power (Physical connection) 
+  atom type POWER()
+    //data bool PowerOnOff
+    data int surface_seed = 0
+    data int surface_leaf = 0
+
+    export port Port_t SEED_CONNECT_TOP()
+      export port Port_t SEED_CONNECT_BOTTOM()
+        export port Port_t SEED_CONNECT_LEFT()
+          export port Port_t SEED_CONNECT_RIGHT()
+            //export port Port_t SEED_CONNECT_FRONT()
+              export port Port_t CABLE_CONNECT_BACK()
+              export port Port_t CABLE_DISCONNECT_BACK()
+            //export port Port_t SEED_DISCONNECT_FRONT()
+          export port Port_t SEED_DISCONNECT_RIGHT()
+        export port Port_t SEED_DISCONNECT_LEFT()
+      export port Port_t SEED_DISCONNECT_BOTTOM()
+    export port Port_t SEED_DISCONNECT_TOP()
+
+    export port Port_t SEED_LAST_DISCONNECT()
+
+    export port Port_t LEAF_CONNECT_TOP()
+      export port Port_t LEAF_CONNECT_BOTTOM()
+        export port Port_t LEAF_CONNECT_LEFT()
+          export port Port_t LEAF_CONNECT_RIGHT()
+            //export port Port_t LEAF_CONNECT_FRONT()
+              //there is no connection for power block from back side
+            //export port Port_t LEAF_DISCONNECT_FRONT()
+          export port Port_t LEAF_DISCONNECT_RIGHT()
+        export port Port_t LEAF_DISCONNECT_LEFT()
+      export port Port_t LEAF_DISCONNECT_BOTTOM()
+    export port Port_t LEAF_DISCONNECT_TOP()
+
+
+    
+    place DISCONNECTED, CONNECTED_1, CONNECTED_2, CONNECTED_3, CONNECTED_4//, CONNECTED_5, CONNECTED_6
+    initial to DISCONNECTED// do {printf("\033[32m[Bogdan's output]:\033[0m No power\n");what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_TOP from DISCONNECTED to CONNECTED_1 provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_seed=surface_seed|top; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_BOTTOM from DISCONNECTED to CONNECTED_1 provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_seed=surface_seed|bottom; what_connected(surface_seed,surface_leaf);}       
+      on SEED_CONNECT_LEFT from DISCONNECTED to CONNECTED_1 provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_seed=surface_seed|left; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_RIGHT from DISCONNECTED to CONNECTED_1 provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_seed=surface_seed|right; what_connected(surface_seed,surface_leaf);}
+      //on SEED_CONNECT_FRONT from DISCONNECTED to CONNECTED_1 provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_seed=surface_seed|front; what_connected(surface_seed,surface_leaf);}
+                          on CABLE_CONNECT_BACK from DISCONNECTED to CONNECTED_1 provided(((back&surface_leaf)==0)&&(back&surface_seed)==0) do {surface_seed=surface_seed|back; what_connected(surface_seed,surface_leaf);}
+        on SEED_LAST_DISCONNECT from CONNECTED_1 to DISCONNECTED provided(surface_seed==1||surface_seed==2||surface_seed==4||surface_seed==8||surface_seed==16||surface_seed==32)
+          do {printf("\033[32m[Bogdan's output]:\033[0m Last seed has been disconnected\n");surface_seed=0;what_connected(surface_seed,surface_leaf);} 
+        on SEED_LAST_DISCONNECT from CONNECTED_2 to DISCONNECTED provided(surface_seed==1||surface_seed==2||surface_seed==4||surface_seed==8||surface_seed==16||surface_seed==32)
+          do {printf("\033[32m[Bogdan's output]:\033[0m Last seed has been disconnected\n");surface_seed=0;what_connected(surface_seed,surface_leaf);}  
+        on SEED_LAST_DISCONNECT from CONNECTED_3 to DISCONNECTED provided(surface_seed==1||surface_seed==2||surface_seed==4||surface_seed==8||surface_seed==16||surface_seed==32) 
+          do {printf("\033[32m[Bogdan's output]:\033[0m Last seed has been disconnected\n");surface_seed=0;what_connected(surface_seed,surface_leaf);} 
+        on SEED_LAST_DISCONNECT from CONNECTED_4 to DISCONNECTED provided(surface_seed==1||surface_seed==2||surface_seed==4||surface_seed==8||surface_seed==16||surface_seed==32) 
+          do {printf("\033[32m[Bogdan's output]:\033[0m Last seed has been disconnected\n");surface_seed=0;what_connected(surface_seed,surface_leaf);} 
+      on LEAF_CONNECT_TOP from DISCONNECTED to CONNECTED_1 provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_leaf=surface_leaf|top; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_BOTTOM from DISCONNECTED to CONNECTED_1 provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_leaf=surface_leaf|bottom; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_LEFT from DISCONNECTED to CONNECTED_1 provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_leaf=surface_leaf|left; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_RIGHT from DISCONNECTED to CONNECTED_1 provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_leaf=surface_leaf|right; what_connected(surface_seed,surface_leaf);}
+      //on LEAF_CONNECT_FRONT from DISCONNECTED to CONNECTED_1 provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_leaf=surface_leaf|front; what_connected(surface_seed,surface_leaf);}
+      //there is no connection for power block from back side
+        on LEAF_DISCONNECT_TOP from CONNECTED_1 to DISCONNECTED provided((top&surface_leaf)!=0) do {surface_leaf=surface_leaf-top;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_BOTTOM from CONNECTED_1 to DISCONNECTED provided((bottom&surface_leaf)!=0) do {surface_leaf=surface_leaf-bottom;what_connected(surface_seed,surface_leaf);}        
+        on LEAF_DISCONNECT_LEFT from CONNECTED_1 to DISCONNECTED provided((left&surface_leaf)!=0) do {surface_leaf=surface_leaf-left;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_RIGHT from CONNECTED_1 to DISCONNECTED provided((right&surface_leaf)!=0) do {surface_leaf=surface_leaf-right;what_connected(surface_seed,surface_leaf);}
+        //on LEAF_DISCONNECT_FRONT from CONNECTED_1 to DISCONNECTED provided((front&surface_leaf)!=0) do {surface_leaf=surface_leaf-front;what_connected(surface_seed,surface_leaf);}        
+        //there is no connection for power block from back side
+      on SEED_CONNECT_TOP from CONNECTED_1 to CONNECTED_2  provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_seed=surface_seed|top;what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_BOTTOM from CONNECTED_1 to CONNECTED_2  provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_seed=surface_seed|bottom;what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_LEFT from CONNECTED_1 to CONNECTED_2  provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_seed=surface_seed|left;what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_RIGHT from CONNECTED_1 to CONNECTED_2  provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_seed=surface_seed|right;what_connected(surface_seed,surface_leaf);}
+      //on SEED_CONNECT_FRONT from CONNECTED_1 to CONNECTED_2  provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_seed=surface_seed|front;what_connected(surface_seed,surface_leaf);}
+                          on CABLE_CONNECT_BACK from CONNECTED_1 to CONNECTED_2  provided(((back&surface_leaf)==0)&&(back&surface_seed)==0) do {surface_seed=surface_seed|back;what_connected(surface_seed,surface_leaf);}        
+        on SEED_DISCONNECT_TOP from CONNECTED_2 to CONNECTED_1 provided((top&surface_seed)!=0) do {surface_seed=surface_seed-top;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_BOTTOM from CONNECTED_2 to CONNECTED_1 provided((bottom&surface_seed)!=0) do {surface_seed=surface_seed-bottom;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_LEFT from CONNECTED_2 to CONNECTED_1 provided((left&surface_seed)!=0) do {surface_seed=surface_seed-left;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_RIGHT from CONNECTED_2 to CONNECTED_1 provided((right&surface_seed)!=0) do {surface_seed=surface_seed-right;what_connected(surface_seed,surface_leaf);}
+        //on SEED_DISCONNECT_FRONT from CONNECTED_2 to CONNECTED_1 provided((front&surface_seed)!=0) do {surface_seed=surface_seed-front;what_connected(surface_seed,surface_leaf);}
+                            on CABLE_DISCONNECT_BACK from CONNECTED_2 to CONNECTED_1 provided((back&surface_seed)!=0) do {surface_seed=surface_seed-back;what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_TOP from CONNECTED_1 to CONNECTED_2 provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_leaf=surface_leaf|top; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_BOTTOM from CONNECTED_1 to CONNECTED_2 provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_leaf=surface_leaf|bottom; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_LEFT from CONNECTED_1 to CONNECTED_2 provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_leaf=surface_leaf|left; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_RIGHT from CONNECTED_1 to CONNECTED_2 provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_leaf=surface_leaf|right; what_connected(surface_seed,surface_leaf);}
+      //on LEAF_CONNECT_FRONT from CONNECTED_1 to CONNECTED_2 provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_leaf=surface_leaf|front; what_connected(surface_seed,surface_leaf);}
+      //there is no connection for power block from back side
+        on LEAF_DISCONNECT_TOP from CONNECTED_2 to CONNECTED_1 provided((top&surface_leaf)!=0) do {surface_leaf=surface_leaf-top;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_BOTTOM from CONNECTED_2 to CONNECTED_1 provided((bottom&surface_leaf)!=0) do {surface_leaf=surface_leaf-bottom;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_LEFT from CONNECTED_2 to CONNECTED_1 provided((left&surface_leaf)!=0) do {surface_leaf=surface_leaf-left;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_RIGHT from CONNECTED_2 to CONNECTED_1 provided((right&surface_leaf)!=0) do {surface_leaf=surface_leaf-right;what_connected(surface_seed,surface_leaf);}
+        //on LEAF_DISCONNECT_FRONT from CONNECTED_2 to CONNECTED_1 provided((front&surface_leaf)!=0) do {surface_leaf=surface_leaf-front;what_connected(surface_seed,surface_leaf);}
+        //there is no connection for power block from back side
+      on SEED_CONNECT_TOP from CONNECTED_2 to CONNECTED_3  provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_seed=surface_seed|top; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_BOTTOM from CONNECTED_2 to CONNECTED_3  provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_seed=surface_seed|bottom; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_LEFT from CONNECTED_2 to CONNECTED_3  provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_seed=surface_seed|left; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_RIGHT from CONNECTED_2 to CONNECTED_3  provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_seed=surface_seed|right; what_connected(surface_seed,surface_leaf);}
+      //on SEED_CONNECT_FRONT from CONNECTED_2 to CONNECTED_3  provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_seed=surface_seed|front; what_connected(surface_seed,surface_leaf);}
+                          on CABLE_CONNECT_BACK from CONNECTED_2 to CONNECTED_3  provided(((back&surface_leaf)==0)&&(back&surface_seed)==0) do {surface_seed=surface_seed|back; what_connected(surface_seed,surface_leaf);} 
+        on SEED_DISCONNECT_TOP from CONNECTED_3 to CONNECTED_2 provided((top&surface_seed)!=0) do {surface_seed=surface_seed-top;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_BOTTOM from CONNECTED_3 to CONNECTED_2 provided((bottom&surface_seed)!=0) do {surface_seed=surface_seed-bottom;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_LEFT from CONNECTED_3 to CONNECTED_2 provided((left&surface_seed)!=0) do {surface_seed=surface_seed-left;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_RIGHT from CONNECTED_3 to CONNECTED_2 provided((right&surface_seed)!=0) do {surface_seed=surface_seed-right;what_connected(surface_seed,surface_leaf);}
+        //on SEED_DISCONNECT_FRONT from CONNECTED_3 to CONNECTED_2 provided((front&surface_seed)!=0) do {surface_seed=surface_seed-front;what_connected(surface_seed,surface_leaf);}
+                            on CABLE_DISCONNECT_BACK from CONNECTED_3 to CONNECTED_2 provided((back&surface_seed)!=0) do {surface_seed=surface_seed-back;what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_TOP from CONNECTED_2 to CONNECTED_3 provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_leaf=surface_leaf|top; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_BOTTOM from CONNECTED_2 to CONNECTED_3 provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_leaf=surface_leaf|bottom; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_LEFT from CONNECTED_2 to CONNECTED_3 provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_leaf=surface_leaf|left; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_RIGHT from CONNECTED_2 to CONNECTED_3 provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_leaf=surface_leaf|right; what_connected(surface_seed,surface_leaf);}
+      //on LEAF_CONNECT_FRONT from CONNECTED_2 to CONNECTED_3 provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_leaf=surface_leaf|front; what_connected(surface_seed,surface_leaf);}
+      //there is no connection for power block from back side
+        on LEAF_DISCONNECT_TOP from CONNECTED_3 to CONNECTED_2 provided((top&surface_leaf)!=0) do {surface_leaf=surface_leaf-top;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_BOTTOM from CONNECTED_3 to CONNECTED_2 provided((bottom&surface_leaf)!=0) do {surface_leaf=surface_leaf-bottom;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_LEFT from CONNECTED_3 to CONNECTED_2 provided((left&surface_leaf)!=0) do {surface_leaf=surface_leaf-left;}
+        on LEAF_DISCONNECT_RIGHT from CONNECTED_3 to CONNECTED_2 provided((right&surface_leaf)!=0) do {surface_leaf=surface_leaf-right;what_connected(surface_seed,surface_leaf);}
+        //on LEAF_DISCONNECT_FRONT from CONNECTED_3 to CONNECTED_2 provided((front&surface_leaf)!=0) do {surface_leaf=surface_leaf-front;what_connected(surface_seed,surface_leaf);}
+        //there is no connection for power block from back side
+      on SEED_CONNECT_TOP from CONNECTED_3 to CONNECTED_4  provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_seed=surface_seed|top; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_BOTTOM from CONNECTED_3 to CONNECTED_4  provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_seed=surface_seed|bottom; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_LEFT from CONNECTED_3 to CONNECTED_4  provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_seed=surface_seed|left; what_connected(surface_seed,surface_leaf);}
+      on SEED_CONNECT_RIGHT from CONNECTED_3 to CONNECTED_4  provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_seed=surface_seed|right; what_connected(surface_seed,surface_leaf);}
+      //on SEED_CONNECT_FRONT from CONNECTED_3 to CONNECTED_4  provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_seed=surface_seed|front; what_connected(surface_seed,surface_leaf);}
+                          on CABLE_CONNECT_BACK from CONNECTED_3 to CONNECTED_4  provided(((back&surface_leaf)==0)&&(back&surface_seed)==0) do {surface_seed=surface_seed|back; what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_TOP from CONNECTED_4 to CONNECTED_3 provided((top&surface_seed)!=0) do {surface_seed=surface_seed-top;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_BOTTOM from CONNECTED_4 to CONNECTED_3 provided((bottom&surface_seed)!=0) do {surface_seed=surface_seed-bottom;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_LEFT from CONNECTED_4 to CONNECTED_3 provided((left&surface_seed)!=0) do {surface_seed=surface_seed-left;what_connected(surface_seed,surface_leaf);}
+        on SEED_DISCONNECT_RIGHT from CONNECTED_4 to CONNECTED_3 provided((right&surface_seed)!=0) do {surface_seed=surface_seed-right;what_connected(surface_seed,surface_leaf);}
+        //on SEED_DISCONNECT_FRONT from CONNECTED_4 to CONNECTED_3 provided((front&surface_seed)!=0) do {surface_seed=surface_seed-front;what_connected(surface_seed,surface_leaf);}
+                            on CABLE_DISCONNECT_BACK from CONNECTED_4 to CONNECTED_3 provided((back&surface_seed)!=0) do {surface_seed=surface_seed-back;what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_TOP from CONNECTED_3 to CONNECTED_4 provided(((top&surface_leaf)==0)&&(top&surface_seed)==0) do {surface_leaf=surface_leaf|top; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_BOTTOM from CONNECTED_3 to CONNECTED_4 provided(((bottom&surface_leaf)==0)&&(bottom&surface_seed)==0) do {surface_leaf=surface_leaf|bottom; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_LEFT from CONNECTED_3 to CONNECTED_4 provided(((left&surface_leaf)==0)&&(left&surface_seed)==0) do {surface_leaf=surface_leaf|left; what_connected(surface_seed,surface_leaf);}
+      on LEAF_CONNECT_RIGHT from CONNECTED_3 to CONNECTED_4 provided(((right&surface_leaf)==0)&&(right&surface_seed)==0) do {surface_leaf=surface_leaf|right; what_connected(surface_seed,surface_leaf);}
+      //on LEAF_CONNECT_FRONT from CONNECTED_3 to CONNECTED_4 provided(((front&surface_leaf)==0)&&(front&surface_seed)==0) do {surface_leaf=surface_leaf|front; what_connected(surface_seed,surface_leaf);}
+      //there is no connection for power block from back side
+        on LEAF_DISCONNECT_TOP from CONNECTED_4 to CONNECTED_3 provided((top&surface_leaf)!=0) do {surface_leaf=surface_leaf-top;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_BOTTOM from CONNECTED_4 to CONNECTED_3 provided((bottom&surface_leaf)!=0) do {surface_leaf=surface_leaf-bottom;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_LEFT from CONNECTED_4 to CONNECTED_3 provided((left&surface_leaf)!=0) do {surface_leaf=surface_leaf-left;what_connected(surface_seed,surface_leaf);}
+        on LEAF_DISCONNECT_RIGHT from CONNECTED_4 to CONNECTED_3 provided((right&surface_leaf)!=0) do {surface_leaf=surface_leaf-right;what_connected(surface_seed,surface_leaf);}
+        //on LEAF_DISCONNECT_FRONT from CONNECTED_4 to CONNECTED_3 provided((front&surface_leaf)!=0) do {surface_leaf=surface_leaf-front;what_connected(surface_seed,surface_leaf);}
+        //there is no connection for power block from back side
+  end
+  //MCU
+  atom type MCU(int id)
+    data bool MCUSwitcherOnOFF
+    data bool adc
+    data bool gyro
+    data bool mic
+    //data bool PowerOnOff
+    //MCU
+    export port Port_t SWITCH_ON()
+    export port Port_t SWITCH_OFF()
+    //Audio&Visual
+      //LEDs
+      export port Port_t SET_COLOUR()
+      export port Port_t Led_OFF()
+      //SPEAKER
+      export port Port_t PLAY_SOUND()
+      export port Port_t Sound_OFF()
+    export port Port_t READ_STATE() 
+    //ADC
+      export port Port_t READ_ADC()
+
+      export port Port_t ADC_ENABLE()
+      export port Port_t ADC_DISABLE()
+      //MIC
+      export port Port_t MEASURE_MIC()
+      export port Port_t MIC_OFF()
+      //GYRO
+      export port Port_t MEASURE_GYRO()
+      export port Port_t GYRO_OFF()
+    //export port OnOFF_t On_Off(PowerOnOff)    
+
+    place NO_POWER, MCU_ON
+    initial to NO_POWER do{printf("\033[32m[Bogdan's output]:\033[0m PBlinkyBlock with cable port initialazed (id: %d)\n", id);}
+    on SWITCH_ON from NO_POWER to MCU_ON
+      //do{printf("\033[32m[Bogdan's output]:\033[0m (receiver) PowerOnOff = %d\n",PowerOnOff);}
+    on SWITCH_OFF from MCU_ON to NO_POWER
+      do{MCUSwitcherOnOFF = false;printf("\033[32m[Bogdan's output]:\033[0m MCUSwitcherOnOFF = %d (OFF)\n", MCUSwitcherOnOFF);}
+    //Audio&Visual
+      //LEDs
+      on SET_COLOUR from MCU_ON to MCU_ON
+      on Led_OFF from MCU_ON to MCU_ON 
+      //SPEAKER
+      on PLAY_SOUND from MCU_ON to MCU_ON
+      on Sound_OFF from MCU_ON to MCU_ON  
+    on READ_STATE from MCU_ON to MCU_ON 
+    //ADC
+    on ADC_ENABLE from MCU_ON to MCU_ON do {adc = true;}
+    on ADC_DISABLE from MCU_ON to MCU_ON provided(adc==true) do{adc=false;}
+    on MEASURE_MIC from MCU_ON to MCU_ON provided(adc==true) do{mic=true;}
+    on MIC_OFF from MCU_ON to MCU_ON provided(mic==true) do{mic=false;}
+    on MEASURE_GYRO from MCU_ON to MCU_ON provided(adc==true) do{gyro=true;}
+    on GYRO_OFF from MCU_ON to MCU_ON provided(gyro==true) do {gyro=false;}
+    on READ_ADC from MCU_ON to MCU_ON provided(adc==true)
+
+  end
+  /*
+  atom type COMMUNICATION(int connection_init)
+    /* connection_surface:
+    0 - top 
+    1 - front
+    2 - left 
+    3 - right 
+    4 - back 
+    5 - bottom
+    data int connection_surface
+  end
+  */
+  // Visual
+    // LED
+  atom type LED(int id) // there is two leds
+    data bool LedSwitcherOnOFF // (true = LED is on; false = LED is off)
+    data int R //#R from 0 to 255 to set the coolour 
+    data int G //#G from 0 to 255 to set the coolour 
+    data int B //#B from 0 to 255 to set the coolour
+    data int LED_brightness 
+    export port Port_t REPORT_STATE()
+    export port Port_t COMMAND_COLOUR()
+    export port Port_t Led_OFF()
+
+    place LED_OFFED,GLOW
+
+    initial to LED_OFFED// do { printf("\033[32m[Bogdan's output]:\033[0m LED-%d OFFED\n", id);}
+    on REPORT_STATE from LED_OFFED to LED_OFFED do { printf("\033[32m[Bogdan's output]:\033[0m LED-%d is NOT glowing but sending the status of the LED to the MCU\n", id);}
+    on COMMAND_COLOUR from LED_OFFED to GLOW do { R = 1; B = 2; G = 3; LED_brightness = 100; LedSwitcherOnOFF = true;   
+        printf("\033[32m[Bogdan's output]:\033[0m LED-%d got color from MCU\n", id);
+        printf("\033[32m[Bogdan's output]:\033[0m RGB = (%d,%d,%d) brightness = %d\n",R,G,B,LED_brightness);
+        printf("\033[32m[Bogdan's output]:\033[0m LedSwitcherOnOFF = %d\n", LedSwitcherOnOFF);} 
+    on COMMAND_COLOUR from GLOW to GLOW do {printf("\033[32m[Bogdan's output]:\033[0m LED-%d got a NEW color from MCU\n", id);}
+    on REPORT_STATE from GLOW to GLOW do { printf("\033[32m[Bogdan's output]:\033[0m LED-%d light up and send the state of the LED to the MCU\n", id);}
+    on Led_OFF from GLOW to LED_OFFED do { LedSwitcherOnOFF = false; printf("\033[32m[Bogdan's output]:\033[0m LED-%d off\n", id); }
+    
+  end
+  
+  // Audio
+    // Speaker
+  atom type SPEAKER()
+    export port Port_t REPORT_STATE()
+    export port Port_t COMMAND_SOUND()
+    export port Port_t Sound_OFF()
+
+    place SPEAKER_OFFED,SPEAK
+
+    initial to SPEAKER_OFFED// do { printf("\033[32m[Bogdan's output]:\033[0m SPEAKER OFFED\n"); }
+    on REPORT_STATE from SPEAKER_OFFED to SPEAKER_OFFED do { printf("\033[32m[Bogdan's output]:\033[0m SPEAKER OFFED and REPORT_STATE to MCU\n");}
+    on COMMAND_SOUND from SPEAKER_OFFED to SPEAK do { printf("\033[32m[Bogdan's output]:\033[0m Sound received\n");play_sound();}
+    on COMMAND_SOUND from SPEAK to SPEAK do { printf("\033[32m[Bogdan's output]:\033[0m New sound received\n");play_sound();}
+    on REPORT_STATE from SPEAK to SPEAK do { printf("\033[32m[Bogdan's output]:\033[0m SPEAK and REPORT_STATE to MCU\n");}
+    on Sound_OFF from SPEAK to SPEAKER_OFFED do { printf("\033[32m[Bogdan's output]:\033[0m SPEAKER OFFED\n");}
+  end
+  
+  // ADC
+  atom type ADC()
+      export port Port_t ADC_ENABLE()
+      export port Port_t ADC_DISABLE()
+      export port Port_t MEASURE_MIC()
+      export port Port_t MEASURE_GYRO()
+      export port Port_t MIC_OFF()
+      export port Port_t GYRO_OFF()
+      export port Port_t READ_ADC()
+
+      place ADC_OFF,ADC_ON
+
+      initial to ADC_OFF// do { printf("\033[32m[Bogdan's output]:\033[0m ADC OFFED\n"); }
+      on ADC_ENABLE from ADC_OFF to ADC_ON
+      on ADC_DISABLE from ADC_ON to ADC_OFF
+        on MEASURE_MIC from ADC_ON to ADC_ON do { printf("\033[32m[Bogdan's output]:\033[0m MIC measuring\n");}
+        on MEASURE_GYRO from ADC_ON to ADC_ON do { printf("\033[32m[Bogdan's output]:\033[0m GYRO measuring\n");}
+        on MIC_OFF from ADC_ON to ADC_ON do { printf("\033[32m[Bogdan's output]:\033[0m MIC OFFED\n");}
+        on GYRO_OFF from ADC_ON to ADC_ON do { printf("\033[32m[Bogdan's output]:\033[0m GYRO OFFED\n");}
+        on READ_ADC from ADC_ON to ADC_ON
+    end
+    atom type MICROPHONE()
+      data int mic_m
+      export port Port_t START_MIC()
+      export port Port_t MIC_ANS()
+      export port Port_t MIC_OFF()
+
+      place MICROPHONE_OFFED, MEASURE
+
+      initial to MICROPHONE_OFFED// do {mic_m=0; printf("\033[32m[Bogdan's output]:\033[0m MIC OFFED\n"); }
+      on MIC_ANS from MICROPHONE_OFFED to MICROPHONE_OFFED do{printf("\033[32m[Bogdan's output]:\033[0m MIC_ANS=%d OFFED\n", mic_m);}
+      on START_MIC from MICROPHONE_OFFED to MEASURE do{mic_m=measure();}
+      on MIC_ANS from MEASURE to MEASURE do{mic_m=measure();printf("\033[32m[Bogdan's output]:\033[0m MIC_ANS=%d\n", mic_m);}
+      on MIC_OFF from MEASURE to MICROPHONE_OFFED do{mic_m=0;}
+
+    end
+    atom type GYRO()
+      data int gyro_m
+      export port Port_t START_GYRO()
+      export port Port_t GYRO_ANS()
+      export port Port_t GYRO_OFF()
+      
+      place GYRO_OFFED, MEASURE
+
+      initial to GYRO_OFFED// do {gyro_m=0; printf("\033[32m[Bogdan's output]:\033[0m GYRO OFFED\n"); }
+      on GYRO_ANS from GYRO_OFFED to GYRO_OFFED do{printf("\033[32m[Bogdan's output]:\033[0m GYRO_ANS=%d OFFED\n", gyro_m);}
+      on START_GYRO from GYRO_OFFED to MEASURE do{gyro_m=measure();}
+      on GYRO_ANS from MEASURE to MEASURE do{gyro_m=measure();printf("\033[32m[Bogdan's output]:\033[0m GYRO_ANS=%d\n", gyro_m);}
+      on GYRO_OFF from MEASURE to GYRO_OFFED do{gyro_m=0;}
+
+  end
+
+	compound type BlinkyBlockPower(int id)//, int x, int y)//, int z)
+    component POWER power()
+
+    component MCU microcontroller(id)
+      connector Trigger1 seed_connect_block_top(power.SEED_CONNECT_TOP,microcontroller.SWITCH_ON)
+        connector Trigger1 seed_connect_block_bottom(power.SEED_CONNECT_BOTTOM,microcontroller.SWITCH_ON)
+          connector Trigger1 seed_connect_block_left(power.SEED_CONNECT_LEFT,microcontroller.SWITCH_ON)
+            connector Trigger1 seed_connect_block_right(power.SEED_CONNECT_RIGHT,microcontroller.SWITCH_ON)
+              //connector Trigger1 seed_connect_block_front(power.SEED_CONNECT_FRONT,microcontroller.SWITCH_ON)
+                connector Trigger1 connect_cable_back(power.CABLE_CONNECT_BACK,microcontroller.SWITCH_ON)
+                connector Singleton seed_disconnect_block_back(power.CABLE_DISCONNECT_BACK)
+              //connector Singleton seed_disconnect_block_front(power.SEED_DISCONNECT_FRONT)
+            connector Singleton seed_disconnect_block_right(power.SEED_DISCONNECT_RIGHT)
+          connector Singleton seed_disconnect_block_left(power.SEED_DISCONNECT_LEFT)        
+        connector Singleton seed_disconnect_block_bottom(power.SEED_DISCONNECT_BOTTOM)
+      connector Singleton seed_disconnect_block_top(power.SEED_DISCONNECT_TOP)
+      
+      connector Singleton leaf_connect_block_top(power.LEAF_CONNECT_TOP)
+        connector Singleton leaf_connect_block_bottom(power.LEAF_CONNECT_BOTTOM)
+          connector Singleton leaf_connect_block_left(power.LEAF_CONNECT_LEFT)
+            connector Singleton leaf_connect_block_right(power.LEAF_CONNECT_RIGHT)
+              //connector Singleton leaf_connect_block_front(power.LEAF_CONNECT_FRONT)
+                //there is no connection for power block from back side
+              //connector Singleton leaf_disconnect_block_front(power.LEAF_DISCONNECT_FRONT)
+            connector Singleton leaf_disconnect_block_right(power.LEAF_DISCONNECT_RIGHT)
+          connector Singleton leaf_disconnect_block_left(power.LEAF_DISCONNECT_LEFT)
+        connector Singleton leaf_disconnect_block_bottom(power.LEAF_DISCONNECT_BOTTOM)
+      connector Singleton leaf_disconnect_block_top(power.LEAF_DISCONNECT_TOP)
+
+      //connector OneToOne switcher_power(power.On_Off,microcontroller.On_Off)
+      //connector Singleton c_MCU_SWITCH_ON(microcontroller.SWITCH_ON)
+      
+      //LED
+        component LED led1(1)
+        component LED led2(2)
+        connector Synchron3 c_COLOUR(microcontroller.SET_COLOUR,led1.COMMAND_COLOUR,led2.COMMAND_COLOUR)
+        //connector Singleton c_COMMAND_COLOUR_1(led1.COMMAND_COLOUR)
+        connector Trigger1 c_REPORT_STATE_LED1(microcontroller.READ_STATE,led1.REPORT_STATE)
+        connector Singleton c_Led_OFF_1(led1.Led_OFF)
+        //connector Singleton c_COMMAND_COLOUR_2(led2.COMMAND_COLOUR)
+        connector Trigger1 c_REPORT_STATE_LED2(microcontroller.READ_STATE,led2.REPORT_STATE)
+        connector Singleton c_Led_OFF_2(led2.Led_OFF)
+        //export port c_COLOUR.sync_port as MCU_LED1_LED2
+
+      //SPEAKER
+        component SPEAKER speaker()
+        connector Synchron2 c_SOUND(microcontroller.PLAY_SOUND,speaker.COMMAND_SOUND)
+        connector Trigger1 c_REPORT_STATE_SPEAKER(microcontroller.READ_STATE,speaker.REPORT_STATE)
+        connector Singleton c_Sound_OFF(speaker.Sound_OFF)
+      //ADC
+        component ADC adc()
+        connector Synchron2 c_adc_enable(microcontroller.ADC_ENABLE,adc.ADC_ENABLE)
+
+        //MICROPHONE
+        component MICROPHONE microphone()
+        connector Synchron3 c_MEASURE_MIC(microcontroller.MEASURE_MIC,adc.MEASURE_MIC,microphone.START_MIC)
+
+        connector Singleton c_MIC_OFF(microphone.MIC_OFF)
+        //GYRO
+        component GYRO gyro()
+        connector Synchron3 c_MEASURE_GYRO(microcontroller.MEASURE_GYRO,adc.MEASURE_GYRO,gyro.START_GYRO)
+
+        connector Singleton c_GYRO_OFF(gyro.GYRO_OFF)
+
+        connector Trigger4 c_read_adc(microcontroller.READ_ADC,adc.READ_ADC,microphone.MIC_ANS,gyro.GYRO_ANS)
+        connector Trigger4 c_adc_disable(microcontroller.ADC_DISABLE,adc.ADC_DISABLE,microphone.MIC_OFF,gyro.GYRO_OFF)
+      //
+        //connector Trigger4 everything_off(microcontroller.SWITCH_OFF,led1.Led_OFF,led2.Led_OFF,speaker.Sound_OFF)
+        connector Trigger8 SEED_LAST_DISCONNECT_block(power.SEED_LAST_DISCONNECT,microcontroller.SWITCH_OFF,led1.Led_OFF,led2.Led_OFF,speaker.Sound_OFF, adc.ADC_DISABLE, microphone.MIC_OFF,gyro.GYRO_OFF)
+
+  end
+end

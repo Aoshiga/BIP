@@ -1,0 +1,11 @@
+package shape
+    use BlinkyBlockPower
+    use BlinkyBlock
+    
+    compound type shape()
+        component BlinkyBlockPower.BlinkyBlockPower BlinkyBlockPower_11(/*id:*/1)//,/*pos:*/1,1)
+        component BlinkyBlock.BlinkyBlock BlinkyBlock_12(/*id:*/2)//,/*pos:*/1,2)
+        component BlinkyBlock.BlinkyBlock BlinkyBlock_13(/*id:*/3)//,/*pos:*/1,3)
+
+    end
+end

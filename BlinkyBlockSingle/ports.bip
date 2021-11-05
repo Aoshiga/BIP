@@ -1,0 +1,38 @@
+  package ports
+    port type Port_t()
+    port type OnOFF_t(bool e)
+
+  // 	connectors
+	connector type Singleton (Port_t p)
+		define p
+	end
+
+    connector type Synchron2 (Port_t p, Port_t q)
+            //export port Port_t sync_port()
+            define p q
+        end
+
+    connector type Synchron3 (Port_t p, Port_t q, Port_t r)
+            //export port Port_t sync_port()
+            define p q r
+        end
+
+    // triggers
+        connector type Trigger1 (Port_t p, Port_t q)
+            define p' q //'
+        end
+        
+    connector type Trigger4 (Port_t p, Port_t q, Port_t r, Port_t s)
+            define p' q r s//'
+        end
+
+    connector type Trigger8 (Port_t p, Port_t q, Port_t r, Port_t s, Port_t t, Port_t x, Port_t y, Port_t z)
+            define p' q r s t x y z//'
+        end
+
+
+    connector type OneToOne(OnOFF_t s, OnOFF_t r1)
+        define s' r1 //'
+        on s r1 down { r1.e = s.e;}
+    end
+end
