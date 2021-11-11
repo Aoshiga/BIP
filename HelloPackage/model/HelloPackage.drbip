@@ -1,0 +1,41 @@
+model HelloPackage
+
+/*import from "HelloPackage.cpp" {
+
+    structure HelloPackageMap {
+        const bool isFist(Node)
+        const bool isLast(Node)
+        void print()
+    }
+
+    addressing HelloPackageAddressing {
+        const HELLO findFirstHello(HelloPackageMap)
+        const HELLO findLastHello(HelloPackageMap)
+        const HELLO[] getAllHello()
+    }
+}
+
+motif HelloPackage<HelloPackageMap, HelloPackageAddressing> {
+    rule interaction HelloAdd(HELLO[] all, HELLO newHello)
+    when(true) {
+        all.insert(newHello)
+    }
+}*/
+
+initializer {
+    hi = new HelloPackage()
+
+    newHello = new HELLO(1)
+
+    node = hi.S.create()
+    hi.@.bind(newHello, node)
+    hi.S.insert(node)
+
+    /*for(i : seq(0, 5)) {
+        newHello = new HELLO(i)
+
+        node = hi.S.create()
+        hi.@.bind(newHello, node)
+        hi.S.insert(node)
+    }*/
+}
