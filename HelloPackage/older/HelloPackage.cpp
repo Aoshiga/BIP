@@ -1,5 +1,5 @@
-#include<../drbip>
-#include<HelloPackageTypes.hpp>
+#include<drbip.h>
+#include<DeployTypes.hpp>
 #include<map>
 #include<list>
 #include<set>
@@ -7,12 +7,33 @@ using namespace HelloPackage;
 
 namespace reconfigure {
 
+    class FirstHello : public CondState<AT__HELLO, 1, 1> {
+        FirstHello(AT__HELLO * hello) : CondState(atom) {}
+    };
+
+    class MiddleHello : public CondState<AT__HELLO, 2, 1> {
+        MiddleHello(AT__HELLO * hello) : CondState(atom) {}
+    }
+
+    class LastHello : public CondState<AT__HELLO, 3, 1> {
+        LastHello(AT__HELLO * hello) : CondState(atom) {}
+    };
+
     class HelloPackageMap {
         public:
             list<Node*> nodes;
 
             Node * create() {
                 return new Node();
+            }
+
+            void insert(Node * node) {
+                nodes.push_front(node);
+            }
+
+            void assign(HelloPackageMap * helloPackage) {
+                nodes.clear();
+                nodes = helloPackage->nodes;
             }
 
             bool isFirst(Node * node) {
@@ -29,10 +50,6 @@ namespace reconfigure {
         
             Node * getLastHello() {
                 return nodes.front();
-            }
-
-            void insert(Node * node) {
-                nodes.push_front(node);
             }
 
             void print() {

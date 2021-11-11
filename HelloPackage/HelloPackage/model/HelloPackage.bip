@@ -1,0 +1,27 @@
+@cpp(include="stdio.h")
+package HelloPackage
+	extern function printf(string, int)
+	
+	port type HelloPort_t()
+	
+	atom type HELLO(int id)
+		export port HelloPort_t p()
+		place START,END
+		initial to START
+		on p from START to END do {printf("Hello from %d\n", id);}
+	end
+	
+	connector type ThreeRdv(HelloPort_t p1, HelloPort_t p2, HelloPort_t p3)
+		define p1 p2 p3
+	end
+
+	connector type Alone(HelloPort_t p)
+		define p
+	end
+	
+	compound type HelloCompound()
+		component HELLO c1(1), c2(2), c3(3)
+		//connector ThreeRdv connect(c1.p, c2.p, c3.p)
+		connector Alone alone(c1.p)
+	end
+end

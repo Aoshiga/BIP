@@ -1,0 +1,3 @@
+/home/aoshiga/Documents/BIP/HelloPackage/HelloPackage/build/CMakeFiles/rebuild_cache.dir
+/home/aoshiga/Documents/BIP/HelloPackage/HelloPackage/build/CMakeFiles/edit_cache.dir
+/home/aoshiga/Documents/BIP/HelloPackage/HelloPackage/build/CMakeFiles/system.dir
