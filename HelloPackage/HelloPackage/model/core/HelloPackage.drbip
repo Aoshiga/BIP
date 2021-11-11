@@ -35,7 +35,7 @@ when(true){
 initializer {
     hi = new HelloPackage()
 
-    for(i : seq(0, 100)) {
+    for(i : seq(0, 3)) {
         newHello = new HELLO(i)
 
         node = hi.S.create()

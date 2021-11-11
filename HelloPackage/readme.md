@@ -6,6 +6,6 @@ How to compile ?
 
 Go to ./HelloPackage
 Open a terminal and tip:
-```make genmodel```
 ```make gencode```
+```make compile```
 ```make execute```

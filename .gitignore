@@ -33,3 +33,9 @@
 
 # Configuration file
 .idea
+build
+output
+**/model/HelloPackage.bip
+**/model/HelloPackage.cpp
+**/model/HelloPackage.drbip
+.vscode

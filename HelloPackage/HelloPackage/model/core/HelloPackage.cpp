@@ -1,5 +1,5 @@
 #include<drbip.h>
-#include<DeployTypes.hpp>
+#include<HelloPackageTypes.hpp>
 #include<map>
 #include<list>
 #include<set>
@@ -13,7 +13,7 @@ namespace reconfigure {
 
     class MiddleHello : public CondState<AT__HELLO, 2, 1> {
         MiddleHello(AT__HELLO * hello) : CondState(atom) {}
-    }
+    };
 
     class LastHello : public CondState<AT__HELLO, 3, 1> {
         LastHello(AT__HELLO * hello) : CondState(atom) {}
@@ -71,25 +71,25 @@ namespace reconfigure {
             }
 
 
-            AT_HELLO * findFirstHello(HelloPackageMap & map) {
+            AT__HELLO * findFirstHello(HelloPackageMap & map) {
                 Node * first = map.getFirstHello();
                 assert(first != NULL);
 
                 for(auto elem = nodeMap.begin(); elem != nodeMap.end(); ++elem)
                     if(elem->second == first)
-                        return (AT_HELLO*) elem->first;
+                        return (AT__HELLO*) elem->first;
 
                 assert(false);
                 return NULL;
             }
 
-            AT_HELLO * findLastHello(PlatoonMap & map) {
+            AT__HELLO * findLastHello(HelloPackageMap & map) {
                 Node * last = map.getLastHello();
                 assert(last != NULL);
 
                 for(auto elem = nodeMap.end(); elem != nodeMap.begin(); --elem)
                     if(elem->second == last)
-                        return (AT_HELLO*) elem->first;
+                        return (AT__HELLO*) elem->first;
 
                 assert(false);
                 return NULL;
@@ -103,14 +103,14 @@ namespace reconfigure {
                     return NULL;
             }
 
-            set<AT_HELLO*>* getAllHello() {
-                set<AT_HELLO*>* hello = new set<AT_HELLO*>();
+            /*set<AT__HELLO*>* getAllHello() {
+                set<AT__HELLO*>* hello = new set<AT__HELLO*>();
 
                 for(auto elem = nodeMap.begin(); elem != nodeMap.end(); ++elem)
-                    hello->insert((AT_HELLO*) elem->first);
+                    hello->insert((AT__HELLO*) elem->first);
 
                 return hello;
-            }
+            }*/
 
             HelloPackageAddressing* slice(HelloPackageMap* list) {
 
@@ -125,5 +125,5 @@ namespace reconfigure {
 
                 return res;
             }
-    }
+    };
 }
